@@ -25,7 +25,7 @@ fi
 echo "📍 현재 환경: $CURRENT → 대상 환경: $TARGET"
 echo "🏷️  이미지 태그: $IMAGE_TAG"
 
-# 1. 기존 컨테이너 완전 정리
+# 1. 기존 컨테이너 정리
 echo "🧹 기존 컨테이너 정리 중..."
 docker-compose stop $TARGET_SERVICE 2>/dev/null || true
 docker-compose rm -f $TARGET_SERVICE 2>/dev/null || true
@@ -38,7 +38,7 @@ docker pull ${DOCKER_USERNAME}/image-change:${TARGET,,}-${IMAGE_TAG}
 echo "🔨 $TARGET 환경 시작 중..."
 docker-compose up -d $TARGET_SERVICE
 
-# 3. 헬스체크
+# 4. 헬스체크
 echo "🏥 헬스체크 중..."
 for i in {1..20}; do
     if [ "$TARGET" = "BLUE" ]; then
@@ -81,19 +81,22 @@ else
     docker-compose up -d nginx
 fi
 
+echo "⏳ Nginx 시작 대기..."
+sleep 5
+
 # 6. 최종 확인
 echo "🔍 최종 헬스체크 중..."
 sleep 5
 
 # 최종 헬스체크 (여러 번 시도)
 FINAL_CHECK_SUCCESS=false
-for i in {1..10}; do
+for i in {1..15}; do
     if curl -f http://localhost/health > /dev/null 2>&1; then
         FINAL_CHECK_SUCCESS=true
         break
     fi
-    echo "⏳ 최종 헬스체크 재시도... ($i/10)"
-    sleep 2
+    echo "⏳ 최종 헬스체크 재시도... ($i/15)"
+    sleep 3
 done
 
 if [ "$FINAL_CHECK_SUCCESS" = true ]; then
@@ -105,9 +108,9 @@ if [ "$FINAL_CHECK_SUCCESS" = true ]; then
     # 7. 이전 환경 정리 (선택사항)
     echo "🧹 이전 환경 정리 중..."
     if [ "$CURRENT" = "BLUE" ]; then
-        docker-compose stop app-blue || true
+        docker-compose stop app-blue 2>/dev/null || true
     else
-        docker-compose stop app-green || true
+        docker-compose stop app-green 2>/dev/null || true
     fi
 else
     echo "❌ 최종 헬스체크 실패"

@@ -49,11 +49,12 @@ jobs:
               cd /opt/image-change
             }
 
-            if [ -d ".git" ]; then
-              git pull origin main
-            else
-              git clone https://github.com/${{ github.repository }}.git .
-            fi
+                      if [ -d ".git" ]; then
+            git stash push -m "Backup local changes"
+            git pull origin main
+          else
+            git clone https://github.com/${{ github.repository }}.git .
+          fi
 
             # 이미지 태그 업데이트
             export IMAGE_TAG=${{ github.sha }}

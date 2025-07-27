@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   # Blue 환경
   app-blue:
