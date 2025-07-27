@@ -61,6 +61,13 @@ export IMAGE_NAME=${IMAGE_NAME:-cozyrim/image-change}
 export VERSION=${VERSION:-latest}
 
 docker-compose build app-$TARGET_ENV_LOWER
+
+# 기존 컨테이너가 있으면 완전히 제거
+log_info "기존 컨테이너 정리 중..."
+docker-compose stop app-$TARGET_ENV_LOWER 2>/dev/null || true
+docker-compose rm -f app-$TARGET_ENV_LOWER 2>/dev/null || true
+
+# 새 컨테이너 시작
 docker-compose up -d app-$TARGET_ENV_LOWER
 
 # 2. 헬스체크
@@ -136,12 +143,10 @@ http {
 EOF
 
 # Nginx 재시작 (컨테이너가 없으면 생성)
-if docker-compose ps app-active | grep -q "Up"; then
-    docker-compose restart app-active
-else
-    log_info "app-active 컨테이너가 없습니다. 새로 시작합니다."
-    docker-compose up -d app-active
-fi
+log_info "app-active 컨테이너 재시작 중..."
+docker-compose stop app-active 2>/dev/null || true
+docker-compose rm -f app-active 2>/dev/null || true
+docker-compose up -d app-active
 
 # 4. 최종 헬스체크
 log_info "최종 헬스체크 중..."

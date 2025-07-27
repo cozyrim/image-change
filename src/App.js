@@ -14,7 +14,7 @@ function App() {
         return {
           backgroundColor: '#4CAF50',
           title: '🟢 Green 배포',
-          image: '/images/green-image.jpg',
+          image: '/images/bluegreen2.png',
           description: '새로운 버전이 성공적으로 배포되었습니다!'
         };
       case 'BLUE':
@@ -22,7 +22,7 @@ function App() {
         return {
           backgroundColor: '#2196F3',
           title: '🔵 Blue 배포',
-          image: '/images/blue-image.jpg',
+          image: '/images/bluegreen1.png',
           description: '안정적인 현재 버전이 실행 중입니다.'
         };
     }
