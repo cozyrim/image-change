@@ -96,10 +96,4 @@ jobs:
           # Blue/Green 배포 실행
           ./scripts/deploy.sh $VERSION $CURRENT_ENV
           
-    - name: Notify deployment status
-      if: always() && secrets.SLACK_WEBHOOK != ''
-      uses: 8398a7/action-slack@v3
-      with:
-        status: ${{ job.status }}
-        channel: '#deployments'
-        webhook_url: ${{ secrets.SLACK_WEBHOOK }} 
+ 
