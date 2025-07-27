@@ -7,34 +7,42 @@ function App() {
   const buildTime = process.env.REACT_APP_BUILD_TIME || new Date().toISOString();
   const version = process.env.REACT_APP_VERSION || '1.0.0';
 
-  // 배포 타입에 따른 색상과 이미지 설정
+  // 배포 타입에 따른 설정 (이미지는 정적)
   const getDeploymentConfig = () => {
+    const config = {
+      // 정적 이미지 경로 - 수동으로 변경 후 git push로 무중단 배포 테스트
+      image: '/images/bluegreen1.png',
+      description: '무중단 배포 테스트를 위한 React 애플리케이션입니다.'
+    };
+
+    // 배포 타입별 컨테이너 정보
     switch (deploymentType) {
       case 'GREEN':
-        return {
-          backgroundColor: '#4CAF50',
-          title: '🟢 Green 배포',
-          image: '/images/bluegreen2.png',
-          description: '새로운 버전이 성공적으로 배포되었습니다!'
-        };
+        config.containerType = '🟢 GREEN';
+        config.containerColor = '#4CAF50';
+        break;
       case 'BLUE':
       default:
-        return {
-          backgroundColor: '#2196F3',
-          title: '🔵 Blue 배포',
-          image: '/images/bluegreen1.png',
-          description: '안정적인 현재 버전이 실행 중입니다.'
-        };
+        config.containerType = '🔵 BLUE';
+        config.containerColor = '#2196F3';
+        break;
     }
+
+    return config;
   };
 
   const config = getDeploymentConfig();
 
   return (
     <div className="App">
-      <div className="container" style={{ backgroundColor: config.backgroundColor }}>
+      {/* 오른쪽 상단 컨테이너 타입 표시 */}
+      <div className="container-badge" style={{ backgroundColor: config.containerColor }}>
+        {config.containerType}
+      </div>
+      
+      <div className="container">
         <header className="header">
-          <h1>{config.title}</h1>
+          <h1>🚀 Blue/Green 무중단 배포 데모</h1>
           <p className="description">{config.description}</p>
         </header>
         
@@ -42,14 +50,17 @@ function App() {
           <div className="image-container">
             <img 
               src={config.image} 
-              alt="배포 상태 이미지" 
+              alt="무중단 배포 테스트 이미지" 
               className="deployment-image"
             />
+            <p className="image-info">
+              💡 이미지를 수동으로 변경하고 git push하여 무중단 배포를 테스트하세요!
+            </p>
           </div>
           
           <div className="info-panel">
             <div className="info-item">
-              <strong>배포 타입:</strong> {deploymentType}
+              <strong>현재 컨테이너:</strong> {deploymentType}
             </div>
             <div className="info-item">
               <strong>버전:</strong> {version}
@@ -64,8 +75,8 @@ function App() {
         </main>
         
         <footer className="footer">
-          <p>Blue/Green 무중단 배포 데모 애플리케이션</p>
-          <p>이미지가 바뀌면 새로운 배포가 성공적으로 완료된 것입니다!</p>
+          <p>🔄 Blue/Green 무중단 배포 시스템</p>
+          <p>Docker + GitHub Actions로 구현된 CI/CD 파이프라인</p>
         </footer>
       </div>
     </div>
