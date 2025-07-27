@@ -135,8 +135,13 @@ http {
 }
 EOF
 
-# Nginx 재시작
-docker-compose restart app-active
+# Nginx 재시작 (컨테이너가 없으면 생성)
+if docker-compose ps app-active | grep -q "Up"; then
+    docker-compose restart app-active
+else
+    log_info "app-active 컨테이너가 없습니다. 새로 시작합니다."
+    docker-compose up -d app-active
+fi
 
 # 4. 최종 헬스체크
 log_info "최종 헬스체크 중..."

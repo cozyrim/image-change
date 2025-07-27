@@ -108,7 +108,11 @@ jobs:
           export IMAGE_NAME=${{ env.IMAGE_NAME }}
           
           # 현재 활성 환경 확인
-          CURRENT_ENV=$(docker-compose ps | grep "app-active" | grep -o "Up" > /dev/null && echo "BLUE" || echo "GREEN")
+          if docker-compose ps app-active | grep -q "Up"; then
+            CURRENT_ENV="BLUE"
+          else
+            CURRENT_ENV="GREEN"
+          fi
           
           # Blue/Green 배포 실행
           ./scripts/deploy.sh $VERSION $CURRENT_ENV
