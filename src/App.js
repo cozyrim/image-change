@@ -11,7 +11,7 @@ function App() {
   const getDeploymentConfig = () => {
     const config = {
       // 정적 이미지 경로 - 수동으로 변경 후 git push로 무중단 배포 테스트
-      image: '/images/bluegreen2.png',
+      image: '/images/bluegreen1.png',
       description: '무중단 배포 테스트를 위한 React 애플리케이션입니다.'
     };
 
