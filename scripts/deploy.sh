@@ -57,7 +57,7 @@ export REACT_APP_DEPLOYMENT_TYPE=$TARGET_ENV
 
 # 환경변수 설정
 export REGISTRY=${REGISTRY:-ghcr.io}
-export IMAGE_NAME=${IMAGE_NAME:-cozyrim/blue-green-demo}
+export IMAGE_NAME=${IMAGE_NAME:-cozyrim/image-change}
 export VERSION=${VERSION:-latest}
 
 docker-compose build app-$TARGET_ENV_LOWER

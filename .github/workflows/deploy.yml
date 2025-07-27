@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.actor }}/blue-green-demo
+  IMAGE_NAME: ${{ github.actor }}/image-change
 
 jobs:
   test:

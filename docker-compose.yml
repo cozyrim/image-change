@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # Blue 환경 (현재 안정 버전)
   app-blue:
-    image: ${REGISTRY:-ghcr.io}/${IMAGE_NAME:-cozyrim/blue-green-demo}:blue-${VERSION:-latest}
+    image: ${REGISTRY:-ghcr.io}/${IMAGE_NAME:-cozyrim/image-change}:blue-${VERSION:-latest}
     build:
       context: .
       dockerfile: Dockerfile
@@ -26,7 +26,7 @@ services:
 
   # Green 환경 (새로운 버전)
   app-green:
-    image: ${REGISTRY:-ghcr.io}/${IMAGE_NAME:-cozyrim/blue-green-demo}:green-${VERSION:-latest}
+    image: ${REGISTRY:-ghcr.io}/${IMAGE_NAME:-cozyrim/image-change}:green-${VERSION:-latest}
     build:
       context: .
       dockerfile: Dockerfile
