@@ -85,10 +85,27 @@ jobs:
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.SSH_KEY }}
         script: |
+          # 프로젝트 디렉토리 생성
+          sudo mkdir -p /opt/blue-green-deployment
+          sudo chown $USER:$USER /opt/blue-green-deployment
           cd /opt/blue-green-deployment
+          
+          # 프로젝트 클론 또는 업데이트
+          if [ -d ".git" ]; then
+            git pull origin main
+          else
+            git clone https://github.com/${{ github.repository }}.git .
+          fi
+          
+          # 스크립트 실행 권한 부여
+          chmod +x scripts/deploy.sh
+          
+          # 환경변수 설정
           export VERSION=${{ github.sha }}
           export BUILD_TIME=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           export REACT_APP_DEPLOYMENT_TYPE=GREEN
+          export REGISTRY=${{ env.REGISTRY }}
+          export IMAGE_NAME=${{ env.IMAGE_NAME }}
           
           # 현재 활성 환경 확인
           CURRENT_ENV=$(docker-compose ps | grep "app-active" | grep -o "Up" > /dev/null && echo "BLUE" || echo "GREEN")
