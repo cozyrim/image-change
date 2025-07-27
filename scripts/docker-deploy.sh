@@ -11,11 +11,12 @@ if [ -z "$IMAGE_TAG" ] || [ -z "$DOCKER_USERNAME" ]; then
 fi
 
 # 현재 활성 환경 확인
-if grep -q "app-blue:80" nginx-simple.conf; then
+if [ -f "nginx-simple.conf" ] && grep -q "app-blue:80" nginx-simple.conf && ! grep -q "# server app-blue:80" nginx-simple.conf; then
     CURRENT="BLUE"
     TARGET="GREEN"
     TARGET_SERVICE="app-green"
 else
+    # 초기 배포이거나 GREEN이 활성인 경우
     CURRENT="GREEN"
     TARGET="BLUE" 
     TARGET_SERVICE="app-blue"
@@ -66,14 +67,31 @@ else
     sed -i 's/# server app-green:80;/server app-green:80;/' nginx-simple.conf
 fi
 
-# 5. Nginx 재시작
-docker-compose restart nginx
+# 5. Nginx 시작/재시작
+if docker-compose ps nginx | grep -q "Up"; then
+    echo "🔄 Nginx 재시작 중..."
+    docker-compose restart nginx
+else
+    echo "🚀 Nginx 시작 중..."
+    docker-compose up -d nginx
+fi
 
 # 6. 최종 확인
 echo "🔍 최종 헬스체크 중..."
 sleep 5
 
-if curl -f http://localhost/health > /dev/null 2>&1; then
+# 최종 헬스체크 (여러 번 시도)
+FINAL_CHECK_SUCCESS=false
+for i in {1..10}; do
+    if curl -f http://localhost/health > /dev/null 2>&1; then
+        FINAL_CHECK_SUCCESS=true
+        break
+    fi
+    echo "⏳ 최종 헬스체크 재시도... ($i/10)"
+    sleep 2
+done
+
+if [ "$FINAL_CHECK_SUCCESS" = true ]; then
     echo "🎉 배포 완료! $TARGET 환경으로 전환됨"
     echo "🌐 접속 URL: http://3.39.46.208"
     echo "📊 Blue: http://3.39.46.208:3001"
