@@ -25,11 +25,16 @@ fi
 echo "📍 현재 환경: $CURRENT → 대상 환경: $TARGET"
 echo "🏷️  이미지 태그: $IMAGE_TAG"
 
-# 1. 새 이미지 Pull
+# 1. 기존 컨테이너 완전 정리
+echo "🧹 기존 컨테이너 정리 중..."
+docker-compose stop $TARGET_SERVICE 2>/dev/null || true
+docker-compose rm -f $TARGET_SERVICE 2>/dev/null || true
+
+# 2. 새 이미지 Pull
 echo "📥 새 이미지 다운로드 중..."
 docker pull ${DOCKER_USERNAME}/image-change:${TARGET,,}-${IMAGE_TAG}
 
-# 2. 새 환경 시작
+# 3. 새 환경 시작
 echo "🔨 $TARGET 환경 시작 중..."
 docker-compose up -d $TARGET_SERVICE
 
