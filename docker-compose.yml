@@ -1,78 +1,31 @@
 version: '3.8'
 
 services:
-  # Blue 환경 (현재 안정 버전)
+  # Blue 환경
   app-blue:
-    image: image-change:blue-${VERSION:-latest}
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - DEPLOYMENT_TYPE=BLUE
-        - VERSION=${VERSION:-1.0.0}
-    environment:
-      - REACT_APP_DEPLOYMENT_TYPE=BLUE
-      - REACT_APP_VERSION=${VERSION:-1.0.0}
-      - REACT_APP_BUILD_TIME=${BUILD_TIME:-}
+    image: ${DOCKER_USERNAME:-your_username}/image-change:blue-${IMAGE_TAG:-latest}
     ports:
       - '3001:80'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.blue.rule=Host(`blue.localhost`) || Host(`3.39.46.208`)'
-      - 'traefik.http.routers.blue.entrypoints=web'
     networks:
       - app-network
     restart: unless-stopped
 
-  # Green 환경 (새로운 버전)
+  # Green 환경
   app-green:
-    image: image-change:green-${VERSION:-latest}
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        - DEPLOYMENT_TYPE=GREEN
-        - VERSION=${VERSION:-1.0.0}
-    environment:
-      - REACT_APP_DEPLOYMENT_TYPE=GREEN
-      - REACT_APP_VERSION=${VERSION:-1.0.0}
-      - REACT_APP_BUILD_TIME=${BUILD_TIME:-}
+    image: ${DOCKER_USERNAME:-your_username}/image-change:green-${IMAGE_TAG:-latest}
     ports:
       - '3002:80'
-    labels:
-      - 'traefik.enable=true'
-      - 'traefik.http.routers.green.rule=Host(`green.localhost`) || Host(`3.39.46.208`)'
-      - 'traefik.http.routers.green.entrypoints=web'
     networks:
       - app-network
     restart: unless-stopped
 
-  # Traefik (로드 밸런서)
-  traefik:
-    image: traefik:v2.10
-    command:
-      - '--api.insecure=true'
-      - '--providers.docker=true'
-      - '--providers.docker.exposedbydefault=false'
-      - '--entrypoints.web.address=:80'
-      - '--entrypoints.websecure.address=:443'
-    ports:
-      - '80:80'
-      - '443:443'
-      - '8080:8080' # Traefik 대시보드
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - app-network
-    restart: unless-stopped
-
-  # 현재 활성 환경을 가리키는 서비스
-  app-active:
+  # Load Balancer (Nginx)
+  nginx:
     image: nginx:alpine
     ports:
-      - '3000:80'
+      - '80:80'
     volumes:
-      - ./nginx-active.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx-simple.conf:/etc/nginx/nginx.conf:ro
     networks:
       - app-network
     restart: unless-stopped
