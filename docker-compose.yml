@@ -15,11 +15,11 @@ services:
       - REACT_APP_VERSION=${VERSION:-1.0.0}
       - REACT_APP_BUILD_TIME=${BUILD_TIME:-}
     ports:
-      - "3001:80"
+      - '3001:80'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.blue.rule=Host(`blue.localhost`)"
-      - "traefik.http.routers.blue.entrypoints=web"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.blue.rule=Host(`blue.localhost`) || Host(`3.39.46.208`)'
+      - 'traefik.http.routers.blue.entrypoints=web'
     networks:
       - app-network
     restart: unless-stopped
@@ -38,11 +38,11 @@ services:
       - REACT_APP_VERSION=${VERSION:-1.0.0}
       - REACT_APP_BUILD_TIME=${BUILD_TIME:-}
     ports:
-      - "3002:80"
+      - '3002:80'
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.green.rule=Host(`green.localhost`)"
-      - "traefik.http.routers.green.entrypoints=web"
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.green.rule=Host(`green.localhost`) || Host(`3.39.46.208`)'
+      - 'traefik.http.routers.green.entrypoints=web'
     networks:
       - app-network
     restart: unless-stopped
@@ -51,15 +51,15 @@ services:
   traefik:
     image: traefik:v2.10
     command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
+      - '--api.insecure=true'
+      - '--providers.docker=true'
+      - '--providers.docker.exposedbydefault=false'
+      - '--entrypoints.web.address=:80'
+      - '--entrypoints.websecure.address=:443'
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"  # Traefik 대시보드
+      - '80:80'
+      - '443:443'
+      - '8080:8080' # Traefik 대시보드
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
@@ -70,7 +70,7 @@ services:
   app-active:
     image: nginx:alpine
     ports:
-      - "3000:80"
+      - '3000:80'
     volumes:
       - ./nginx-active.conf:/etc/nginx/nginx.conf:ro
     networks:
@@ -82,4 +82,4 @@ services:
 
 networks:
   app-network:
-    driver: bridge 
+    driver: bridge
